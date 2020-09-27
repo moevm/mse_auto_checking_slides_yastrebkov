@@ -1,0 +1,37 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+    {% if title %}{{ title }}{% else %}Welcome{% endif %}
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+     <a class="navbar-brand" href="{{ url_for('main_page')}}">
+     <img src="https://cdn.icon-icons.com/icons2/1673/PNG/512/checkmarkcircleoutline_110695.png" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+        Presentation verification system
+     </a>
+     <div class="collapse navbar-collapse" id="navbarSupportedContent">
+     <ul class="navbar-nav mr-auto">
+         <li class="nav-item active">
+          <a class="nav-link" href="{{url_for('home', username=user.username) }}">Home <span class="sr-only">(current)</span></a>
+         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Check new</a>
+        </li>
+         <li class="nav-item">
+          <a class="nav-link" href="{{ url_for( 'list', username=user.username, page=1) }}">Data base</a>
+        </li>
+        </ul>
+         <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+         </form>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    {% block app_content %}{% endblock %}
+</div>
+{% endblock %}
