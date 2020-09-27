@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block app_content  %}
-    <div class="jumbotron">
         <h1 class="display-4">Checking results:</h1>
         <hr class="my-4">
         <table class="table table-bordered">
@@ -17,10 +16,9 @@
             <tr>
                  <th scope="row">{{loop.index}}</th>
                  <td colspan="2">{{result.name}}</td>
-                 <td>{{result.res}}</td
+                 <td>{{result.res}}</td>
             </tr>
         {% endfor %}
         </tbody>
         </table>
-    </div>
 {% endblock %}
