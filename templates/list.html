@@ -15,7 +15,7 @@
             <tr>
                  <th scope="row">{{loop.index}}</th>
                  <td>
-                     {{elem.name}}<div class="text-right"> <a href="{{url_for('results', username=user.username, id=elem.id)}}" class="btn btn-primary" role="button" aria-pressed="true">Choose</a>
+                     {{elem.name}}<div class="text-right"> <a href="{{url_for('results', id=elem.id)}}" class="btn btn-primary" role="button" aria-pressed="true">Choose</a>
                      </div>
                  </td>
             </tr>
@@ -26,7 +26,7 @@
          <ul class="pagination justify-content-end">
              {% if prev_page == True %}
              <li class="page-item">
-                 <a class="page-link" href="{{url_for('list', username=user.username, page = (page_number - 1))}}" aria-disabled="false">Previous</a>
+                 <a class="page-link" href="{{url_for('list', page = (page_number - 1))}}" aria-disabled="false">Previous</a>
              </li>
              {% else %}
               <li class="page-item disabled">
@@ -34,21 +34,21 @@
              </li>
              {% endif %}
              {% if prev_page == True and next_page == True %}
-             <li class="page-item"><a class="page-link" href="{{url_for('list', username=user.username, page = (page_number - 1))}}">{{page_number - 1}}</a></li>
+             <li class="page-item"><a class="page-link" href="{{url_for('list', page = (page_number - 1))}}">{{page_number - 1}}</a></li>
              <li class="page-item"><a class="page-link">{{page_number}}</a></li>
-             <li class="page-item"><a class="page-link" href="{{url_for('list', username=user.username, page = (page_number + 1))}}">{{page_number + 1}}</a></li>
+             <li class="page-item"><a class="page-link" href="{{url_for('list', page = (page_number + 1))}}">{{page_number + 1}}</a></li>
              {% elif prev_page == False and next_page == True %}
              <li class="page-item"><a class="page-link">{{page_number}}</a></li>
-             <li class="page-item"><a class="page-link" href="{{url_for('list', username=user.username, page = (page_number + 1))}}">{{page_number + 1}}</a></li>
+             <li class="page-item"><a class="page-link" href="{{url_for('list',  page = (page_number + 1))}}">{{page_number + 1}}</a></li>
              {% elif prev_page == True and next_page == False %}
-             <li class="page-item"><a class="page-link" href="{{url_for('list', username=user.username, page = (page_number - 1))}}">{{page_number - 1}}</a></li>
+             <li class="page-item"><a class="page-link" href="{{url_for('list', page = (page_number - 1))}}">{{page_number - 1}}</a></li>
              <li class="page-item"><a class="page-link">{{page_number}}</a></li>
              {% elif prev_page == False and next_page == False %}
              <li class="page-item"><a class="page-link">{{page_number}}</a></li>
              {% endif %}
              {% if next_page == True %}
              <li class="page-item">
-                 <a class="page-link" href="{{url_for('list', username=user.username, page = (page_number + 1))}}" aria-disabled="false">Next</a>
+                 <a class="page-link" href="{{url_for('list',  page = (page_number + 1))}}" aria-disabled="false">Next</a>
              </li>
              {% else %}
              <li class="page-item disabled">

@@ -1,10 +1,11 @@
-from flask import render_template
+from flask import render_template, request, redirect
 from app import app
 
 user = {'username':'test_user'}
 
-@app.route('/<username>/results/<id>')
-def results(username, id):
+
+@app.route('/results/<id>')
+def results(id):
     results = [
         {
             'name': 'Check 1',
@@ -35,11 +36,12 @@ def results(username, id):
             'res': 'Ok'
         }
     ]
-    return render_template("checking.html", title="Checking results", results=results, user=user)
+    return render_template("checking.html", title="Checking results", results=results)
 
-@app.route('/<username>/list')
-@app.route('/<username>/list/<page>')
-def list(username, page):
+
+@app.route('/list')
+@app.route('/list/<page>')
+def list(page):
     main_list = [
         {
             'name': 'File 1',
@@ -187,14 +189,32 @@ def list(username, page):
     else:
         prev_page = True
 
-    return render_template("list.html", title="Data base", user=user, list=list, page_number = int(page), next_page=next_page, prev_page=prev_page)
+    return render_template("list.html", title="Data base", list=list, page_number = int(page), next_page=next_page, prev_page=prev_page)
+
 
 @app.route('/home')
-@app.route('/<username>/home')
-def home(username):
-
+def home():
     return render_template("home.html", title="Home", user=user)
+
 
 @app.route('/')
 def main_page():
-    return render_template("main_page.html", user=user)
+    return render_template("main_page.html")
+
+
+@app.route('/sign-in', methods=["GET", "POST"])
+def sign_in():
+    if request.method == "POST":
+        print(request.form)
+        return redirect("/home")
+    else:
+        return render_template("sign-in.html")
+
+
+@app.route('/sign-up', methods=["GET", "POST"])
+def sign_up():
+    if request.method == "POST":
+        print(request.form)
+        return redirect("/home")
+    else:
+        return render_template("sign-up.html")
