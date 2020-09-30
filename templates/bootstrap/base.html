@@ -17,6 +17,8 @@
     <link href="{{bootstrap_find_resource('css/bootstrap.css', cdn='bootstrap')}}" rel="stylesheet">
     <link href="{{bootstrap_find_resource('css/fontawesome-all.css', cdn='bootstrap')}}" rel="stylesheet">
     {%- endblock styles %}
+    {%- block additional_styles %}
+    {%- endblock additional_styles %}
     {%- endblock head %}
   </head>
   <body{% block body_attribs %}{% endblock body_attribs %}>
