@@ -17,3 +17,29 @@ More information can be found [here](http://se.moevm.info/doku.php/courses:mse:p
 
 Team uses GitHub Projects for activity tracking. The activity board can be found [here](https://github.com/moevm/mse_auto_checking_slides_yastrebkov/projects/1).
 
+## Launch
+
+To launch project you need Python 3 installed on your computer. To install Python, follow [official site's](https://wiki.python.org/moin/BeginnersGuide/Download) instructions. This project assumed to work on Ubuntu 18.04 or later. Stable launching on other operation systems is not guaranteed.
+
+0. Clone repository on local computer and go to project directory:
+
+```shell script
+git clone https://github.com/moevm/mse_auto_checking_slides_yastrebkov.git
+cd mse_auto_checking_slides_yastrebkov
+```
+
+1. Install dependencies with command:
+
+```shell script
+pip install -r requirements.txt
+```
+
+2. Run application:
+
+```shell script
+python app.py
+```
+
+If your default Python is Python 2, use `pip3` and `python3` respectively.
+
+3. Navigate to localhost:5000 or 127.0.0.1:5000 in your browser and enjoy.
