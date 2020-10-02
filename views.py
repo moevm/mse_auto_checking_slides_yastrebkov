@@ -228,7 +228,7 @@ def presentation():
     data = file.stream.read()
     print(os.path.splitext(file.filename)[-1])
     if os.path.splitext(file.filename)[-1] not in [".ppt", ".pptx", ".odp", ".odpx"]:
-        return render_template("upload_status.html", title="Upload status", success=False, user=user), 404
+        return render_template("upload_status.html", title="Upload status", success=False, user=user), 400
     with open(secure_filename(file.filename), "wb") as output_file:
         output_file.write(data)
     return render_template("upload_status.html", title="Upload status", success=True, user=user)
