@@ -1,5 +1,7 @@
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, Response, abort
+from werkzeug.utils import secure_filename
 from app import app
+import os
 
 user = {'username':'test_user'}
 
@@ -218,3 +220,21 @@ def sign_up():
         return redirect("/home")
     else:
         return render_template("sign-up.html")
+
+
+@app.route("/presentation", methods=["POST"])
+def presentation():
+    file = request.files["file"]
+    data = file.stream.read()
+    print(os.path.splitext(file.filename)[-1])
+    if os.path.splitext(file.filename)[-1] not in [".ppt", ".pptx", ".odp", ".odpx"]:
+        return render_template("upload_status.html", title="Upload status", success=False, user=user), 400
+    with open(secure_filename(file.filename), "wb") as output_file:
+        output_file.write(data)
+    return render_template("upload_status.html", title="Upload status", success=True, user=user)
+
+
+@app.route('/upload_presentation')
+def upload_presentation():
+    return render_template("upload_presentation.html", title="Upload presentation", user=user)
+
