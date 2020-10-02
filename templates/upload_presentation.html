@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block app_content  %}
+ <form action="/presentation" method="post" enctype="multipart/form-data">
+   <label for="fileupload">Presentation: </label>
+   <input id="fileupload" name="file" type="file" />
+   <input type="submit" value="submit" id="submit" />
+ </form>
+{% endblock %}
