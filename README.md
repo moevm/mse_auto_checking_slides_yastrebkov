@@ -28,18 +28,25 @@ git clone https://github.com/moevm/mse_auto_checking_slides_yastrebkov.git
 cd mse_auto_checking_slides_yastrebkov
 ```
 
-1. Install dependencies with command:
+1. Create and activate virtual environment for the project:
+
+```shell script
+python -m venv env --system-site-packages
+source ./env/bin/activate
+```
+
+If your default Python is Python 2, use `python3`.
+
+2. Install dependencies:
 
 ```shell script
 pip install -r requirements.txt
 ```
 
-2. Run application:
+3. Run application:
 
 ```shell script
 python app.py
 ```
 
-If your default Python is Python 2, use `pip3` and `python3` respectively.
-
-3. Navigate to localhost:5000 or 127.0.0.1:5000 in your browser and enjoy.
+4. Navigate to localhost:5000 or 127.0.0.1:5000 in your browser and enjoy.
