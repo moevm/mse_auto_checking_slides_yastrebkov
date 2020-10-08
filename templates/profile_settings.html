@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+
+
+{% block app_content  %}
+<div style="display: flex; justify-content: center">
+    <div class="card col-sm-4">
+        <article class="card-body">
+            <h4 class="card-title text-center mb-4 mt-1">Sign up</h4>
+            <hr>
+            <form method="post" action="/profile_set">
+                <div class="form-group">
+                    <label for="username" class="col-form-label">Nickname</label>
+                    <input name="username" type="text" class="form-control" id="username" value="{{user.username}}" required>
+                </div>
+                <div class="form-group">
+                    <label for="firstName" class="col-form-label">First name</label>
+                    <input name="firstName" type="text" class="form-control" id="firstName" value="{{user.firstname}}" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName" class="col-form-label">Last name</label>
+                    <input name="lastName" type="text" class="form-control" id="lastName" value="{{user.lastname}}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="col-form-label">Email</label>
+                    <input name="email" type="email" class="form-control" id="email" value="{{user.email}}" required>
+                </div>
+                <hr class="my-4">
+                <div class="text-right">
+                    <a href="javascript:history.back()" type="button" class="btn btn-lg btn-secondary">Return</a>
+                    <button type="button" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#exampleModal">Confirm</button>
+                </div>
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">You are sure?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                This action cannot be undone.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </article>
+    </div>
+</div>
+{% endblock %}

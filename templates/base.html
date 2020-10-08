@@ -20,15 +20,28 @@
     </a>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
+            {% if user is defined %}
             <li class="nav-item">
                 <a class="nav-link" href="/upload_presentation">Check new</a>
             </li>
+            {% endif %}
+            {% if user is defined %}
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for( 'list', page=1) }}">Data base</a>
             </li>
+            {% endif %}
         </ul>
         {% if user is defined %}
-            <a class="nav-link" href="{{url_for('home') }}">{{user.username}}</a>
+            <div class="btn-group dropleft" style="width: 150px">
+                <button type="button" class="btn btn-info dropdown-toggle btn-block text-truncate" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{user.username}}
+                </button>
+                <div class="dropdown-menu btn-block">
+                    <a class="dropdown-item btn-block text-truncate" href="{{url_for('home')}}">Profile</a>
+                <div class="dropdown-divider btn-block"></div>
+                    <form action="/log_out" method="post"><button type="submit" class="dropdown-item btn-block btn-block">Log out</button></form>
+                </div>
+            </div>
         {% else %}
             <a href="/sign-in" class="btn btn-outline-success" role="button" style="margin-right: 5px">Sign in</a>
             <a href="/sign-up" class="btn btn-outline-success" role="button">Sign up</a>
