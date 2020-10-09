@@ -1,189 +1,193 @@
-from flask import render_template, request, redirect, Response, abort
+from flask import render_template, request, redirect, Response, abort, Flask
+from werkzeug.local import LocalProxy
 from werkzeug.utils import secure_filename
 from app import app
 import os
+from app import app
+from flask_pymongo import *
+from flask_login import LoginManager
+from flask import render_template, url_for, request, flash, redirect
+from werkzeug.urls import url_parse
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import current_user, login_user, logout_user, login_required
+from pymongo import *
 
-user = {'username':'test_user'}
+
+main_list = []
+
+for i in range(32):
+    main_list.append({
+        'name': 'File' + str(i),
+        'id': i
+    })
+
+app.config["MONGO_URI"] = "mongodb://localhost:27017/"
+app.secret_key = 'super secret key'
+
+login = LoginManager(app)
+
+client = MongoClient('localhost', 27017)
+
+db = client['PresVSDB']
+
+Users = db['Users']
+Files = db['Files']
+Settings = db['Settings']
+
+login.login_view = 'login'
+
+
+class User:
+
+    def __init__(self, username, email, firstname, lastname, password):
+        self.username = username
+        self.email = email
+        self.firstname = firstname
+        self.lastname = lastname
+        self.password = password
+
+    @staticmethod
+    def is_authenticated():
+        return True
+
+    @staticmethod
+    def is_active():
+        return True
+
+    @staticmethod
+    def is_anonymous():
+        return False
+
+    def get_id(self):
+        return self.email
+
+    @staticmethod
+    def check_password(password_hash, password):
+        return check_password_hash(password_hash, password)
+
+
+    @login.user_loader
+    def load_user(email):
+        user = Users.find_one({'email': email})
+        if user:
+            user_obj = User(user['username'], user['email'], user['firstname'], user['lastname'], user['password'])
+            return user_obj
+        else:
+            return None
+
+
+    @app.route('/sign-in', methods=['GET', 'POST'])
+    def login():
+        if current_user.is_authenticated:
+            return redirect("/home")
+        if request.method == "POST":
+            user = Users.find_one({"email": request.form['email']})
+            if user and user['password'] == request.form['password']:
+                user_obj = User(user['username'], user['email'], user['firstname'], user['lastname'],  user['password'])
+                login_user(user_obj, request.form.get('remember_me'))
+                return redirect(url_for('home', title='Home', user=current_user))
+            else:
+                return render_template('sign-in.html', title='Sign In', success=False)
+        else:
+            return render_template('sign-in.html', title='Sign In', success=True)
+
+
+    @app.route('/sign-up', methods=['GET', 'POST'])
+    def registrate():
+        if current_user.is_authenticated:
+            return redirect("/home")
+        if request.method == "POST":
+            user = Users.find_one({"email": request.form['email']})
+            if user:
+                return render_template('sign-up.html', title='Sign up', success=False)
+            else:
+                Users.save({
+                    'username': request.form.get('username'),
+                    'email': request.form.get('email'),
+                    'firstname': request.form.get('firstname'),
+                    'lastname': request.form.get('lastname'),
+                    'password': request.form.get('password')
+                })
+                Settings.save(
+                    {
+                        'owner': request.form.get('email'),
+                        's1': True,
+                        's2': True,
+                        's3': True,
+                        's4': True,
+                        's5': True,
+                        's6': True,
+                        's7': True
+                    }
+                )
+                user = Users.find_one({'email': request.form.get('email')})
+                user_obj = User(user['username'], user['email'], user['firstname'], user['lastname'], user['password'])
+                login_user(user_obj)
+                return redirect(url_for('home', title='Home', user=current_user))
+        else:
+            return render_template('sign-up.html', title='Sign up', success=True)
+
+
+@app.route('/log_out')
+def log_out():
+    logout_user()
+    return redirect("/")
 
 
 @app.route('/results/<id>')
 def results(id):
-    results = [
-        {
+    results = []
+    check_setting = Settings.find_one({'owner': current_user.email})
+    if check_setting['s1']:
+        results.append({
             'name': 'Check 1',
             'res': 'Ok'
-        },
-        {
+        })
+    if check_setting['s2']:
+        results.append({
             'name': 'Check 2',
             'res': 'Ok'
-        },
-        {
+        })
+    if check_setting['s3']:
+        results.append({
             'name': 'Check 3',
             'res': 'Ok'
-        },
-        {
+        })
+    if check_setting['s4']:
+        results.append({
             'name': 'Check 4',
             'res': 'Ok'
-        },
-        {
+        })
+    if check_setting['s5']:
+        results.append({
             'name': 'Check 5',
             'res': 'Ok'
-        },
-        {
+        })
+    if check_setting['s6']:
+        results.append({
             'name': 'Check 6',
             'res': 'Ok'
-        },
-        {
+        })
+    if check_setting['s7']:
+        results.append({
             'name': 'Check 7',
             'res': 'Ok'
-        }
-    ]
-    return render_template("checking.html", title="Checking results", results=results)
+        })
+    return render_template("checking.html", title="Checking results", results=results, id=id, user=current_user)
 
 
 @app.route('/list')
 @app.route('/list/<page>')
 def list(page):
-    main_list = [
-        {
-            'name': 'File 1',
-            'id': 1
-        },
-        {
-            'name': 'File 2',
-            'id': 2
-        },
-        {
-            'name': 'File 3',
-            'id': 3
-        },
-        {
-            'name': 'File 4',
-            'id': 4
-        },
-        {
-            'name': 'File 5',
-            'id': 5
-        },
-        {
-            'name': 'File 6',
-            'id': 6
-        },
-        {
-            'name': 'File 7',
-            'id': 7
-        },
-        {
-            'name': 'File 8',
-            'id': 8
-        },
-        {
-            'name': 'File 9',
-            'id': 9
-        },
-        {
-            'name': 'File 10',
-            'id': 10
-        },
-        {
-            'name': 'File 11',
-            'id': 11
-        },
-        {
-            'name': 'File 12',
-            'id': 12
-        },
-        {
-            'name': 'File 13',
-            'id': 13
-        },
-        {
-            'name': 'File 14',
-            'id': 14
-        },
-        {
-            'name': 'File 15',
-            'id': 15
-        },
-        {
-            'name': 'File 16',
-            'id': 16
-        },
-        {
-            'name': 'File 17',
-            'id': 17
-        },
-        {
-            'name': 'File 18',
-            'id': 18
-        },
-        {
-            'name': 'File 19',
-            'id': 19
-        },
-        {
-            'name': 'File 20',
-            'id': 20
-        },
-        {
-            'name': 'File 21',
-            'id': 21
-        },
-        {
-            'name': 'File 22',
-            'id': 22
-        },
-        {
-            'name': 'File 23',
-            'id': 23
-        },
-        {
-            'name': 'File 24',
-            'id': 24
-        },
-        {
-            'name': 'File 25',
-            'id': 25
-        },
-        {
-            'name': 'File 26',
-            'id': 26
-        },
-        {
-            'name': 'File 27',
-            'id': 27
-        },
-        {
-            'name': 'File 28',
-            'id': 28
-        },
-        {
-            'name': 'File 29',
-            'id': 29
-        },
-        {
-            'name': 'File 30',
-            'id': 30
-        },
-        {
-            'name': 'File 31',
-            'id': 31
-        },
-        {
-            'name': 'File 32',
-            'id': 32
-        }
-    ]
-
     list = []
 
-    if int(page)*10 < len(main_list):
+    if int(page) * 10 < len(main_list):
         for number in range(10):
-            list.append(main_list[(int(page)-1)*10+number])
-        next_page=True
+            list.append(main_list[(int(page) - 1) * 10 + number])
+        next_page = True
     else:
-        for number in range(len(main_list) - ((int(page)-1)*10)):
-            list.append(main_list[(int(page)-1)*10+number])
+        for number in range(len(main_list) - ((int(page) - 1) * 10)):
+            list.append(main_list[(int(page) - 1) * 10 + number])
         next_page = False
 
     if int(page) == 1:
@@ -191,50 +195,92 @@ def list(page):
     else:
         prev_page = True
 
-    return render_template("list.html", title="Data base", list=list, page_number = int(page), next_page=next_page, prev_page=prev_page)
+    return render_template("list.html", title="Data base", list=list, page_number=int(page), next_page=next_page,
+                           prev_page=prev_page, user=current_user)
 
 
 @app.route('/home')
 def home():
-    return render_template("home.html", title="Home", user=user)
+    print(current_user.username)
+    return render_template("home.html", title="Home", user=current_user)
 
 
 @app.route('/')
 def main_page():
-    return render_template("main_page.html")
-
-
-@app.route('/sign-in', methods=["GET", "POST"])
-def sign_in():
-    if request.method == "POST":
-        print(request.form)
-        return redirect("/home")
+    if current_user.is_authenticated:
+        print(current_user.username)
+        return render_template("main_page.html", user=current_user)
     else:
-        return render_template("sign-in.html")
-
-
-@app.route('/sign-up', methods=["GET", "POST"])
-def sign_up():
-    if request.method == "POST":
-        print(request.form)
-        return redirect("/home")
-    else:
-        return render_template("sign-up.html")
+        return render_template("main_page.html")
 
 
 @app.route("/presentation", methods=["POST"])
 def presentation():
     file = request.files["file"]
     data = file.stream.read()
-    print(os.path.splitext(file.filename)[-1])
     if os.path.splitext(file.filename)[-1] not in [".ppt", ".pptx", ".odp", ".odpx"]:
-        return render_template("upload_status.html", title="Upload status", success=False, user=user), 400
+        return render_template("upload_presentation.html", title="Upload presentation", success=False, user=current_user), 400
     with open(secure_filename(file.filename), "wb") as output_file:
         output_file.write(data)
-    return render_template("upload_status.html", title="Upload status", success=True, user=user)
+    return render_template("upload_status.html", title="Upload status", success=True, user=current_user)
 
 
 @app.route('/upload_presentation')
 def upload_presentation():
-    return render_template("upload_presentation.html", title="Upload presentation", user=user)
+    return render_template("upload_presentation.html", title="Upload presentation", success=True, user=current_user)
 
+
+@app.route('/check_settings')
+def check_settings():
+    return render_template("check_settings.html", title="Check settings", user=current_user)
+
+
+@app.route('/profile_settings')
+def profile_settings():
+    return render_template("profile_settings.html", title="Profile settings", user=current_user)
+
+
+@app.route('/check_set', methods=["GET", "POST"])
+def check_set():
+    s1 = bool(request.form.get('Check1'))
+    s2 = bool(request.form.get('Check2'))
+    s3 = bool(request.form.get('Check3'))
+    s4 = bool(request.form.get('Check4'))
+    s5 = bool(request.form.get('Check5'))
+    s6 = bool(request.form.get('Check6'))
+    s7 = bool(request.form.get('Check7'))
+    Settings.update({'owner': current_user.email}, {
+        'owner': current_user.email,
+        's1': s1,
+        's2': s2,
+        's3': s3,
+        's4': s4,
+        's5': s5,
+        's6': s6,
+        's7': s7
+    })
+    return redirect("/home")
+
+
+@app.route('/profile_set', methods=["GET", "POST"])
+def profile_set():
+    Users.update({'email': current_user.email}, {
+        'email': request.form['email'],
+        'username': request.form['username'],
+        'firstname': request.form['firstname'],
+        'lastname': request.form['lastname'],
+        'password': current_user.password
+    })
+    logout_user()
+    user = Users.find_one({'email': request.form['email']})
+    user_obj = User(user['username'], user['email'], user['firstname'], user['lastname'], user['password'])
+    login_user(user_obj)
+    return redirect("/home")
+
+
+@app.route('/delete_one/<id>')
+def delete_one(id):
+    for i in main_list:
+        if int(i.get('id')) == int(id):
+            main_list.remove(i)
+    return redirect("/list/1")

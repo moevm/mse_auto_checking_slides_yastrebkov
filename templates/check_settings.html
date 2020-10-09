@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block app_content  %}
+<div style="display: flex; justify-content: center">
+    <div class="card col-sm-4">
+        <article class="card-body">
+            <h1 class="display-6 text-center">Choose checks:</h1>
+            <hr class="my-4">
+            <form form action="/check_set" method="post">
+                <div class="custom-control custom-checkbox">
+                    <input name="Check1" type="checkbox" class="custom-control-input" id="Check1" checked>
+                    <label class="custom-control-label" for="Check1">Carry out the 1st check.</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input name="Check2" type="checkbox" class="custom-control-input" id="Check2" checked>
+                    <label class="custom-control-label" for="Check2">Carry out the 2nd check.</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input name="Check3" type="checkbox" class="custom-control-input" id="Check3" checked>
+                    <label class="custom-control-label" for="Check3">Carry out the 3rd check.</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input name="Check4" type="checkbox" class="custom-control-input" id="Check4" checked>
+                    <label class="custom-control-label" for="Check4">Carry out the 4th check.</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input name="Check5" type="checkbox" class="custom-control-input" id="Check5" checked>
+                    <label class="custom-control-label" for="Check5">Carry out the 5th check.</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input name="Check6" type="checkbox" class="custom-control-input" id="Check6" checked>
+                    <label class="custom-control-label" for="Check6">Carry out the 6th check.</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input name="Check7" type="checkbox" class="custom-control-input" id="Check7" checked>
+                    <label class="custom-control-label" for="Check7">Carry out the 7th check.</label>
+                </div>
+                <hr class="my-4">
+                <div class="text-right">
+                    <a href="javascript:history.back()" type="button" class="btn btn-lg btn-secondary">Return</a>
+                    <button type="button" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#exampleModal">Confirm</button>
+                </div>
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">You are sure?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                This action cannot be undone.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </article>
+    </div>
+</div>
+{% endblock %}

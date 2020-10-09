@@ -1,9 +1,29 @@
 {% extends "base.html" %}
 
 {% block app_content  %}
- <form action="/presentation" method="post" enctype="multipart/form-data">
-   <label for="fileupload">Presentation: </label>
-   <input id="fileupload" name="file" type="file" />
-   <input type="submit" value="submit" id="submit" />
- </form>
+<h1 class="display-4 text-center">Uploading:</h1>
+<hr class="my-4">
+<div style="display: flex; justify-content: center">
+    <div class="card col-sm-4">
+        <article class="card-body">
+            <form action="/presentation" method="post" enctype="multipart/form-data">
+                <div class="input-group">
+                    <div class="custom-file">
+                        <input type="file" name="file" class="custom-file-input" id="fileupload" required>
+                        <label class="custom-file-label" for="fileupload">Choose file...</label>
+                    </div>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit" id="submit">Confirm</button>
+                    </div>
+                </div>
+            </form>
+            {% if success is sameas true %}
+            {% else %}
+            <div class="font-weight-light text-danger">
+                * Please choose a presentation format (.ppt, .pptx, .odp, .odpx)
+            </div>
+            {% endif %}
+        </article>
+    </div>
+</div>
 {% endblock %}
