@@ -11,15 +11,9 @@ from werkzeug.urls import url_parse
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import current_user, login_user, logout_user, login_required
 from pymongo import *
-
-
-main_list = []
-
-for i in range(32):
-    main_list.append({
-        'name': 'File' + str(i),
-        'id': i
-    })
+from checks import checking
+import gridfs
+import json
 
 app.config["MONGO_URI"] = "mongodb://localhost:27017/"
 app.secret_key = 'super secret key'
@@ -33,13 +27,17 @@ db = client['PresVSDB']
 Users = db['Users']
 Files = db['Files']
 Settings = db['Settings']
+Results = db['Results']
+
 
 login.login_view = 'login'
 
 
 class User:
 
-    def __init__(self, username, email, firstname, lastname, password):
+    def __init__(self, _id, username, email, firstname, lastname, password):
+        self.role = "user"
+        self._id = _id
         self.username = username
         self.email = email
         self.firstname = firstname
@@ -70,7 +68,7 @@ class User:
     def load_user(email):
         user = Users.find_one({'email': email})
         if user:
-            user_obj = User(user['username'], user['email'], user['firstname'], user['lastname'], user['password'])
+            user_obj = User(user['_id'], user['username'], user['email'], user['firstname'], user['lastname'],  user['password'])
             return user_obj
         else:
             return None
@@ -83,7 +81,7 @@ class User:
         if request.method == "POST":
             user = Users.find_one({"email": request.form['email']})
             if user and user['password'] == request.form['password']:
-                user_obj = User(user['username'], user['email'], user['firstname'], user['lastname'],  user['password'])
+                user_obj = User(user['_id'], user['username'], user['email'], user['firstname'], user['lastname'],  user['password'])
                 login_user(user_obj, request.form.get('remember_me'))
                 return redirect(url_for('home', title='Home', user=current_user))
             else:
@@ -108,9 +106,10 @@ class User:
                     'lastname': request.form.get('lastname'),
                     'password': request.form.get('password')
                 })
+                user = Users.find_one({"email": request.form['email']})
                 Settings.save(
                     {
-                        'owner': request.form.get('email'),
+                        'owner': user['_id'],
                         's1': True,
                         's2': True,
                         's3': True,
@@ -121,7 +120,7 @@ class User:
                     }
                 )
                 user = Users.find_one({'email': request.form.get('email')})
-                user_obj = User(user['username'], user['email'], user['firstname'], user['lastname'], user['password'])
+                user_obj = User(user['_id'], user['username'], user['email'], user['firstname'], user['lastname'],  user['password'])
                 login_user(user_obj)
                 return redirect(url_for('home', title='Home', user=current_user))
         else:
@@ -137,41 +136,42 @@ def log_out():
 @app.route('/results/<id>')
 def results(id):
     results = []
-    check_setting = Settings.find_one({'owner': current_user.email})
+    check_setting = Settings.find_one({'owner': current_user._id})
+    res = Results.find_one({'file': id})
     if check_setting['s1']:
         results.append({
             'name': 'Check 1',
-            'res': 'Ok'
+            'res': res['res1']
         })
     if check_setting['s2']:
         results.append({
             'name': 'Check 2',
-            'res': 'Ok'
+            'res': res['res2']
         })
     if check_setting['s3']:
         results.append({
             'name': 'Check 3',
-            'res': 'Ok'
+            'res': res['res3']
         })
     if check_setting['s4']:
         results.append({
             'name': 'Check 4',
-            'res': 'Ok'
+            'res': res['res4']
         })
     if check_setting['s5']:
         results.append({
             'name': 'Check 5',
-            'res': 'Ok'
+            'res': res['res5']
         })
     if check_setting['s6']:
         results.append({
             'name': 'Check 6',
-            'res': 'Ok'
+            'res': res['res6']
         })
     if check_setting['s7']:
         results.append({
             'name': 'Check 7',
-            'res': 'Ok'
+            'res': res['res7']
         })
     return render_template("checking.html", title="Checking results", results=results, id=id, user=current_user)
 
@@ -181,6 +181,13 @@ def results(id):
 def list(page):
     list = []
 
+    cursor = Files.find({
+        'owner': current_user._id
+    })
+    main_list = []
+
+    for elem in cursor:
+        main_list.append(elem)
     if int(page) * 10 < len(main_list):
         for number in range(10):
             list.append(main_list[(int(page) - 1) * 10 + number])
@@ -201,7 +208,6 @@ def list(page):
 
 @app.route('/home')
 def home():
-    print(current_user.username)
     return render_template("home.html", title="Home", user=current_user)
 
 
@@ -217,11 +223,29 @@ def main_page():
 @app.route("/presentation", methods=["POST"])
 def presentation():
     file = request.files["file"]
-    data = file.stream.read()
+    #data = file.stream
+    #data = file.stream.read()
     if os.path.splitext(file.filename)[-1] not in [".ppt", ".pptx", ".odp", ".odpx"]:
         return render_template("upload_presentation.html", title="Upload presentation", success=False, user=current_user), 400
-    with open(secure_filename(file.filename), "wb") as output_file:
-        output_file.write(data)
+    #json_file = json.dumps(data)
+    res = checking(file)
+    Files.save({
+        'owner': current_user._id,
+        'name': file.filename,
+    })
+    id = Files.find_one({
+        'owner': current_user._id
+    })['_id']
+    Results.save({
+        "file": str(id),
+        "res1": res[0],
+        "res2": res[1],
+        "res3": res[2],
+        "res4": res[3],
+        "res5": res[4],
+        "res6": res[5],
+        "res7": res[6],
+    })
     return render_template("upload_status.html", title="Upload status", success=True, user=current_user)
 
 
@@ -249,8 +273,8 @@ def check_set():
     s5 = bool(request.form.get('Check5'))
     s6 = bool(request.form.get('Check6'))
     s7 = bool(request.form.get('Check7'))
-    Settings.update({'owner': current_user.email}, {
-        'owner': current_user.email,
+    Settings.update({'owner': current_user._id}, {
+        'owner': current_user._id,
         's1': s1,
         's2': s2,
         's3': s3,
@@ -264,7 +288,7 @@ def check_set():
 
 @app.route('/profile_set', methods=["GET", "POST"])
 def profile_set():
-    Users.update({'email': current_user.email}, {
+    Users.update({'_id': current_user._id}, {
         'email': request.form['email'],
         'username': request.form['username'],
         'firstname': request.form['firstname'],
@@ -273,14 +297,24 @@ def profile_set():
     })
     logout_user()
     user = Users.find_one({'email': request.form['email']})
-    user_obj = User(user['username'], user['email'], user['firstname'], user['lastname'], user['password'])
+    user_obj = User(user['_id'], user['username'], user['email'], user['firstname'], user['lastname'],  user['password'])
     login_user(user_obj)
     return redirect("/home")
 
 
 @app.route('/delete_one/<id>')
 def delete_one(id):
-    for i in main_list:
-        if int(i.get('id')) == int(id):
-            main_list.remove(i)
+    Results.delete_one({
+        'file': id
+    })
+    curs = Files.find({
+        'owner': current_user._id
+    })
+    for elem in curs:
+        if str(elem['_id']) == id:
+            res = elem['_id']
+            Files.delete_one({
+                '_id': res
+            })
+            break
     return redirect("/list/1")
