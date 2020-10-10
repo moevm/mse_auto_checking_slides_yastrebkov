@@ -1,25 +1,16 @@
-from flask import render_template, request, redirect, Response, abort, Flask
-from werkzeug.local import LocalProxy
-from werkzeug.utils import secure_filename
-from app import app
 import os
 from app import app
-from flask_pymongo import *
 from flask_login import LoginManager
-from flask import render_template, url_for, request, flash, redirect
-from werkzeug.urls import url_parse
+from flask import render_template, url_for, request, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import current_user, login_user, logout_user, login_required
 from pymongo import *
 from checks import checking
 import shutil
-import zipfile
-import gridfs
-import json
+
 
 app.config["MONGO_URI"] = "mongodb://localhost:27017/"
 app.secret_key = 'super secret key'
-app.config['UPLOAD_FOLDER'] =  '/uploads'
 
 login = LoginManager(app)
 
