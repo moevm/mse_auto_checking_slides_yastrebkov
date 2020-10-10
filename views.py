@@ -12,11 +12,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import current_user, login_user, logout_user, login_required
 from pymongo import *
 from checks import checking
+import shutil
+import zipfile
 import gridfs
 import json
 
 app.config["MONGO_URI"] = "mongodb://localhost:27017/"
 app.secret_key = 'super secret key'
+app.config['UPLOAD_FOLDER'] =  '/uploads'
 
 login = LoginManager(app)
 
@@ -35,7 +38,8 @@ login.login_view = 'login'
 
 class User:
 
-    def __init__(self, _id, username, email, firstname, lastname, password):
+    def __init__(self, _id, username, email, firstname, lastname, password, searching=None):
+        self.searching = searching
         self.role = "user"
         self._id = _id
         self.username = username
@@ -68,7 +72,7 @@ class User:
     def load_user(email):
         user = Users.find_one({'email': email})
         if user:
-            user_obj = User(user['_id'], user['username'], user['email'], user['firstname'], user['lastname'],  user['password'])
+            user_obj = User(user['_id'], user['username'], user['email'], user['firstname'], user['lastname'],  user['password'], user.get('searching'))
             return user_obj
         else:
             return None
@@ -176,18 +180,49 @@ def results(id):
     return render_template("checking.html", title="Checking results", results=results, id=id, user=current_user)
 
 
-@app.route('/list')
 @app.route('/list/<page>')
-def list(page):
+@app.route('/list/<page>', methods=["POST"])
+def list(page=1):
     list = []
 
     cursor = Files.find({
         'owner': current_user._id
     })
     main_list = []
+    fname = None
+    if request.method == "POST":
+        fname = request.form.get("File-name")
+        if page != "1":
+            fname = current_user.searching
+        Users.update({'_id': current_user._id},
+                     {
+            'username': current_user.username,
+            'email': current_user.email,
+            'firstname': current_user.firstname,
+            'lastname': current_user.lastname,
+            'password': current_user.password,
+            'searching': fname
+        })
+        if fname == None:
+            for elem in cursor:
+                main_list.append(elem)
+        else:
+            for elem in cursor:
+                str_name = elem['name']
+                if str_name.count(fname):
+                    main_list.append(elem)
+    else:
+        Users.update({'_id': current_user._id},
+                     {
+                         'username': current_user.username,
+                         'email': current_user.email,
+                         'firstname': current_user.firstname,
+                         'lastname': current_user.lastname,
+                         'password': current_user.password,
+                     })
+        for elem in cursor:
+            main_list.append(elem)
 
-    for elem in cursor:
-        main_list.append(elem)
     if int(page) * 10 < len(main_list):
         for number in range(10):
             list.append(main_list[(int(page) - 1) * 10 + number])
@@ -201,9 +236,12 @@ def list(page):
         prev_page = False
     else:
         prev_page = True
-
-    return render_template("list.html", title="Data base", list=list, page_number=int(page), next_page=next_page,
-                           prev_page=prev_page, user=current_user)
+    if fname == None:
+        return render_template("list.html", title="Data base", list=list, page_number=int(page), next_page=next_page,
+                            prev_page=prev_page, user=current_user)
+    else:
+        return render_template("list.html", title="Data base", list=list, page_number=int(page), next_page=next_page,
+                            prev_page=prev_page, user=current_user, val=fname)
 
 
 @app.route('/home')
@@ -229,13 +267,26 @@ def presentation():
         return render_template("upload_presentation.html", title="Upload presentation", success=False, user=current_user), 400
     #json_file = json.dumps(data)
     res = checking(file)
-    Files.save({
+    id =  Files.save({
         'owner': current_user._id,
         'name': file.filename,
     })
-    id = Files.find_one({
-        'owner': current_user._id
-    })['_id']
+
+    path = '\\files\\' + str(current_user._id) + '\\' + str(id) + '\\'
+
+    f = open('config.txt', 'r')
+    dir = f.readline()
+    f.close()
+
+    Files.update({'_id': id},{
+        'owner': current_user._id,
+        'name': file.filename,
+        'path': path
+    })
+
+    os.makedirs(dir+path, mode=0o777, exist_ok=False)
+    file.save(dir + path + file.filename)
+
     Results.save({
         "file": str(id),
         "res1": res[0],
@@ -246,7 +297,8 @@ def presentation():
         "res6": res[5],
         "res7": res[6],
     })
-    return render_template("upload_status.html", title="Upload status", success=True, user=current_user)
+
+    return redirect("/results/"+str(id))
 
 
 @app.route('/upload_presentation')
@@ -304,6 +356,9 @@ def profile_set():
 
 @app.route('/delete_one/<id>')
 def delete_one(id):
+    f =open('config.txt', 'r')
+    dir = f.readline()
+    f.close()
     Results.delete_one({
         'file': id
     })
@@ -313,8 +368,10 @@ def delete_one(id):
     for elem in curs:
         if str(elem['_id']) == id:
             res = elem['_id']
+            shutil.rmtree(dir+elem['path'])
             Files.delete_one({
                 '_id': res
             })
             break
+
     return redirect("/list/1")
