@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block app_content  %}
+ {% if success is true %}
+     Presentation is successfully uploaded
+ {% else %}
+     Please choose a presentation format (.ppt, .pptx, .odp, .odpx)
+ {% endif %}
+{% endblock %}
