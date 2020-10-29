@@ -1,6 +1,7 @@
 import os
 from app import app
 from flask_login import LoginManager
+from flask import send_from_directory
 from flask import render_template, url_for, request, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import current_user, login_user, logout_user, login_required
@@ -77,7 +78,7 @@ class User:
             user = Users.find_one({"email": request.form['email']})
             if user and user['password'] == request.form['password']:
                 user_obj = User(user['_id'], user['username'], user['email'], user['firstname'], user['lastname'],  user['password'])
-                login_user(user_obj, request.form.get('remember_me'))
+                login_user(user_obj, remember=bool(request.form.get('remember_me')))
                 return redirect(url_for('home', title='Home', user=current_user))
             else:
                 return render_template('sign-in.html', title='Sign In', success=False)
@@ -122,12 +123,14 @@ class User:
             return render_template('sign-up.html', title='Sign up', success=True)
 
 
+@login_required
 @app.route('/log_out')
 def log_out():
     logout_user()
     return redirect("/")
 
 
+@login_required
 @app.route('/results/<id>')
 def results(id):
     results = []
@@ -171,8 +174,9 @@ def results(id):
     return render_template("checking.html", title="Checking results", results=results, id=id, user=current_user)
 
 
+@login_required
 @app.route('/list/<page>')
-@app.route('/list/<page>', methods=["POST"])
+@app.route('/list/<page>', methods=["POST", "GET"])
 def list(page=1):
     list = []
 
@@ -183,7 +187,7 @@ def list(page=1):
     fname = None
     if request.method == "POST":
         fname = request.form.get("File-name")
-        if page != "1":
+        if fname==None:
             fname = current_user.searching
         Users.update({'_id': current_user._id},
                      {
@@ -235,6 +239,7 @@ def list(page=1):
                             prev_page=prev_page, user=current_user, val=fname)
 
 
+@login_required
 @app.route('/home')
 def home():
     return render_template("home.html", title="Home", user=current_user)
@@ -244,30 +249,26 @@ def home():
 def main_page():
     if current_user.is_authenticated:
         print(current_user.username)
-        return render_template("main_page.html", user=current_user)
+        return redirect("/upload_presentation")
     else:
         return render_template("main_page.html")
 
 
+@login_required
 @app.route("/presentation", methods=["POST"])
 def presentation():
     file = request.files["file"]
-    #data = file.stream
-    #data = file.stream.read()
     if os.path.splitext(file.filename)[-1] not in [".ppt", ".pptx", ".odp", ".odpx"]:
         return render_template("upload_presentation.html", title="Upload presentation", success=False, user=current_user), 400
-    #json_file = json.dumps(data)
     res = checking(file)
     id =  Files.save({
         'owner': current_user._id,
         'name': file.filename,
     })
-
-    path = '\\files\\' + str(current_user._id) + '\\' + str(id) + '\\'
-
     f = open('config.txt', 'r')
     dir = f.readline()
     f.close()
+    path =  os.path.join('files',str(current_user._id), str(id))
 
     Files.update({'_id': id},{
         'owner': current_user._id,
@@ -275,8 +276,8 @@ def presentation():
         'path': path
     })
 
-    os.makedirs(dir+path, mode=0o777, exist_ok=False)
-    file.save(dir + path + file.filename)
+    os.makedirs(os.path.join( dir, path), mode=0o777, exist_ok=False)
+    file.save(os.path.join( dir, path, file.filename))
 
     Results.save({
         "file": str(id),
@@ -292,21 +293,25 @@ def presentation():
     return redirect("/results/"+str(id))
 
 
+@login_required
 @app.route('/upload_presentation')
 def upload_presentation():
     return render_template("upload_presentation.html", title="Upload presentation", success=True, user=current_user)
 
 
+@login_required
 @app.route('/check_settings')
 def check_settings():
     return render_template("check_settings.html", title="Check settings", user=current_user)
 
 
+@login_required
 @app.route('/profile_settings')
 def profile_settings():
     return render_template("profile_settings.html", title="Profile settings", user=current_user)
 
 
+@login_required
 @app.route('/check_set', methods=["GET", "POST"])
 def check_set():
     s1 = bool(request.form.get('Check1'))
@@ -329,6 +334,7 @@ def check_set():
     return redirect("/home")
 
 
+@login_required
 @app.route('/profile_set', methods=["GET", "POST"])
 def profile_set():
     Users.update({'_id': current_user._id}, {
@@ -344,7 +350,22 @@ def profile_set():
     login_user(user_obj)
     return redirect("/home")
 
+@login_required
+@app.route('/download/<id>')
+def download(id):
+    f = open('config.txt', 'r')
+    dir = f.readline()
+    f.close()
+    curs = Files.find({
+        'owner': current_user._id
+    })
+    for elem in curs:
+        if str(elem['_id']) == id:
+            return send_from_directory(os.path.join(dir, elem['path']),filename=elem['name'], attachment_filename=elem['name'], as_attachment=True)
+            break
 
+
+@login_required
 @app.route('/delete_one/<id>')
 def delete_one(id):
     f =open('config.txt', 'r')
@@ -359,7 +380,7 @@ def delete_one(id):
     for elem in curs:
         if str(elem['_id']) == id:
             res = elem['_id']
-            shutil.rmtree(dir+elem['path'])
+            shutil.rmtree(os.path.join(dir, elem['path']))
             Files.delete_one({
                 '_id': res
             })

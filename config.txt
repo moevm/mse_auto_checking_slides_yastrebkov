@@ -1,1 +1,1 @@
-C:\Users\iVlad\PycharmProjects\MSE_MATR\mse_auto_checking_slides_yastrebkov
+/root/pvs

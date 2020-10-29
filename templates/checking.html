@@ -23,6 +23,7 @@
 </table>
 <div class="text-right">
     <a href="javascript:history.back()" type="button" class="btn btn-lg btn-secondary">Return</a>
+    <a href="{{ url_for('download', id=id) }}" type="button" class="btn btn-lg btn-success">Download</a>
     <button type="button" class="btn btn-lg btn-danger" data-toggle="modal" data-target="#exampleModal">Delete</button>
 </div>
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

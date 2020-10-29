@@ -22,12 +22,7 @@
         <ul class="navbar-nav mr-auto">
             {% if user is defined %}
             <li class="nav-item">
-                <a class="nav-link" href="/upload_presentation">Check new</a>
-            </li>
-            {% endif %}
-            {% if user is defined %}
-            <li class="nav-item">
-                <a class="nav-link" type="submit" href="/list/1">Data base</a>
+                <form method="get"><a class="nav-link" type="submit" href="/list/1">Data base</a></form>
             </li>
             {% endif %}
         </ul>
