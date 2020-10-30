@@ -28,6 +28,8 @@ git clone https://github.com/moevm/mse_auto_checking_slides_yastrebkov.git
 cd mse_auto_checking_slides_yastrebkov
 ```
 
+To launch the application, you need MongoDB einstalled and running on default host and ort. Instructions for installing and launching MongoDB can be found on [official site](https://docs.mongodb.com/manual/installation/).
+
 1. Create and activate virtual environment for the project:
 
 ```shell script
@@ -42,6 +44,8 @@ If your default Python is Python 2, use `python3`.
 ```shell script
 pip install -r requirements.txt
 ```
+
+**NB:** run this command if dependencies were updated since last launch. You can run this command before every launch, if all dependencies were already installed in your virtual environment, it will do nothing.
 
 3. Run application:
 
