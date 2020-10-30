@@ -17,6 +17,12 @@ More information can be found [here](http://se.moevm.info/doku.php/courses:mse:p
 
 Team uses GitHub Projects for activity tracking. The activity board can be found [here](https://github.com/moevm/mse_auto_checking_slides_yastrebkov/projects/1).
 
+#### Iterations:
+
+- Iteration 1: base app with simple UI ([issues](https://github.com/moevm/mse_auto_checking_slides_yastrebkov/milestone/1))
+- Iteration 2: improved UI, user registration, DB connection, investigating libraries to wirk with presentations ([issues](https://github.com/moevm/mse_auto_checking_slides_yastrebkov/milestone/2))
+- Iteration 3: implementation of simple presentation checks, implement customization of checks ([issues](https://github.com/moevm/mse_auto_checking_slides_yastrebkov/milestone/3))
+
 ## Launch
 
 To launch project you need Python 3 installed on your computer. To install Python, follow [official site's](https://wiki.python.org/moin/BeginnersGuide/Download) instructions. This project assumed to work on Ubuntu 18.04 or later. Stable launching on other operation systems is not guaranteed.
@@ -28,18 +34,29 @@ git clone https://github.com/moevm/mse_auto_checking_slides_yastrebkov.git
 cd mse_auto_checking_slides_yastrebkov
 ```
 
-1. Install dependencies with command:
+To launch the application, you need MongoDB einstalled and running on default host and ort. Instructions for installing and launching MongoDB can be found on [official site](https://docs.mongodb.com/manual/installation/).
+
+1. Create and activate virtual environment for the project:
+
+```shell script
+python -m venv env --system-site-packages
+source ./env/bin/activate
+```
+
+If your default Python is Python 2, use `python3`.
+
+2. Install dependencies:
 
 ```shell script
 pip install -r requirements.txt
 ```
 
-2. Run application:
+**NB:** run this command if dependencies were updated since last launch. You can run this command before every launch, if all dependencies were already installed in your virtual environment, it will do nothing.
+
+3. Run application:
 
 ```shell script
 python app.py
 ```
 
-If your default Python is Python 2, use `pip3` and `python3` respectively.
-
-3. Navigate to localhost:5000 or 127.0.0.1:5000 in your browser and enjoy.
+4. Navigate to localhost:5000 or 127.0.0.1:5000 in your browser and enjoy.

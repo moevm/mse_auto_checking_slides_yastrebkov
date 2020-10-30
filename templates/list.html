@@ -1,60 +1,75 @@
 {% extends "base.html" %}
 
 {% block app_content  %}
- <h1 class="display-4">Choose file:</h1>
- <hr class="my-4">
- <table class="table table-bordered">
-     <thead>
-           <tr>
-             <th scope="row">#</th>
-             <td>File name</td>
-           </tr>
-     </thead>
-     <tbody>
-         {% for elem in list %}
-            <tr>
-                 <th scope="row">{{loop.index}}</th>
-                 <td>
-                     {{elem.name}}<div class="text-right"> <a href="{{url_for('results', id=elem.id)}}" class="btn btn-primary" role="button" aria-pressed="true">Choose</a>
-                     </div>
-                 </td>
-            </tr>
+<h1 class="display-4">Choose file:</h1>
+<hr class="my-4">
+<div style="justify-content: center">
+    <form action="/list/1" method="post">
+        <div class="input-group mb-3" style="width: 30%; margin-left: 35%">
+            <input type="text" class="form-control" name="File-name" placeholder="File name" aria-label="File name" {% if val is defined %} value="{{val}}"{% endif %} aria-describedby="submit">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit" id="submit">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+<p></p>
+<div style="width: 80%; margin-left: 10%">
+    <table class="table table-bordered" >
+        <thead>
+        <tr>
+            <th scope="row">#</th>
+            <td>File name</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for elem in list %}
+        <tr>
+            <th scope="row">{{loop.index}}</th>
+            <td>
+                <div>
+                    <div>{{elem.name}}</div>
+                    <div class="text-right"> <a href="{{url_for('results', id=elem._id)}}" class="btn btn-primary" role="button" aria-pressed="true">Choose</a></div>
+                </div>
+            </td>
+        </tr>
         {% endfor %}
-     </tbody>
- </table>
-     <nav aria-label="Page navigation example">
-         <ul class="pagination justify-content-end">
-             {% if prev_page == True %}
-             <li class="page-item">
-                 <a class="page-link" href="{{url_for('list', page = (page_number - 1))}}" aria-disabled="false">Previous</a>
-             </li>
-             {% else %}
-              <li class="page-item disabled">
-                 <a class="page-link" aria-disabled="true">Previous</a>
-             </li>
-             {% endif %}
-             {% if prev_page == True and next_page == True %}
-             <li class="page-item"><a class="page-link" href="{{url_for('list', page = (page_number - 1))}}">{{page_number - 1}}</a></li>
-             <li class="page-item"><a class="page-link">{{page_number}}</a></li>
-             <li class="page-item"><a class="page-link" href="{{url_for('list', page = (page_number + 1))}}">{{page_number + 1}}</a></li>
-             {% elif prev_page == False and next_page == True %}
-             <li class="page-item"><a class="page-link">{{page_number}}</a></li>
-             <li class="page-item"><a class="page-link" href="{{url_for('list',  page = (page_number + 1))}}">{{page_number + 1}}</a></li>
-             {% elif prev_page == True and next_page == False %}
-             <li class="page-item"><a class="page-link" href="{{url_for('list', page = (page_number - 1))}}">{{page_number - 1}}</a></li>
-             <li class="page-item"><a class="page-link">{{page_number}}</a></li>
-             {% elif prev_page == False and next_page == False %}
-             <li class="page-item"><a class="page-link">{{page_number}}</a></li>
-             {% endif %}
-             {% if next_page == True %}
-             <li class="page-item">
-                 <a class="page-link" href="{{url_for('list',  page = (page_number + 1))}}" aria-disabled="false">Next</a>
-             </li>
-             {% else %}
-             <li class="page-item disabled">
-                 <a class="page-link" aria-disabled="true">Next</a>
-             </li>
-             {% endif %}
-         </ul>
-     </nav>
+        </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            {% if prev_page == True %}
+            <li class="page-item">
+                <form action="/list/{{page_number - 1}}" method="post"><button type="submit" class="page-link" aria-disabled="false">Prev</button></form>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-disabled="true">Prev</a>
+            </li>
+            {% endif %}
+            {% if prev_page == True and next_page == True %}
+            <form action="/list/{{page_number - 1}}" method="post"><li class="page-item"><button type="submit" class="page-link">{{page_number - 1}}</button></li></form>
+            <form action="/list/{{page_number}}" method="post"><li class="page-item"><button type="submit" class="page-link" aria-disabled="true">{{page_number}}</button></li></form>
+            <form action="/list/{{page_number + 1}}" method="post"><li class="page-item"><button type="submit" class="page-link">{{page_number + 1}}</button></li></form>
+            {% elif prev_page == False and next_page == True %}
+            <form action="/list/{{page_number}}" method="post"><li class="page-item"><button type="submit" class="page-link" aria-disabled="true">{{page_number}}</button></li></form>
+            <form action="/list/{{page_number + 1}}" method="post"><li class="page-item"><button type="submit" class="page-link">{{page_number + 1}}</button></li></form>
+            {% elif prev_page == True and next_page == False %}
+            <form action="/list/{{page_number - 1}}" method="post"><li class="page-item"><button type="submit" class="page-link">{{page_number - 1}}</button></li></form>
+            <form action="/list/{{page_number}}" method="post"><li class="page-item"><button type="submit" class="page-link" aria-disabled="true">{{page_number}}</button></li></form>
+            {% elif prev_page == False and next_page == False %}
+            <form action="/list/{{page_number}}" method="post"> <li class="page-item"><button type="submit" class="page-link" aria-disabled="true">{{page_number}}</button></li></form>
+            {% endif %}
+            {% if next_page == True %}
+            <li class="page-item">
+                <form action="/list/{{page_number + 1}}" method="post"><button type="submit" class="page-link" aria-disabled="false">Next</button></form>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-disabled="true">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
 {% endblock %}
