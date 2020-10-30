@@ -2,26 +2,36 @@
 
 {% block app_content  %}
 <div style="display: flex; justify-content: center">
-    <div class="card col-sm-4">
+    <div class="card col-sm-6">
         <article class="card-body">
             <h4 class="card-title text-center mb-4 mt-1">Sign up</h4>
             <hr>
             <form method="post" action="/sign-up">
                 <div class="form-group">
-                    <label for="firstName" class="col-form-label">First name</label>
-                    <input name="firstName" type="text" class="form-control" id="firstName">
+                    <label for="username" class="col-form-label">Nickname</label>
+                    <input name="username" type="text" class="form-control" id="username" required>
                 </div>
                 <div class="form-group">
-                    <label for="lastName" class="col-form-label">Last name</label>
-                    <input name="lastName" type="text" class="form-control" id="lastName">
+                    <label for="firstname" class="col-form-label">First name</label>
+                    <input name="firstname" type="text" class="form-control" id="firstname" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname" class="col-form-label">Last name</label>
+                    <input name="lastname" type="text" class="form-control" id="lastname" required>
                 </div>
                 <div class="form-group">
                     <label for="email" class="col-form-label">Email</label>
-                    <input name="email" type="email" class="form-control" id="email">
+                    <input name="email" type="email" class="form-control" id="email" required>
                 </div>
+                {% if success is sameas true %}
+                {% else %}
+                <div class="font-weight-light text-danger">
+                    * Email is already in use.
+                </div>
+                {% endif %}
                 <div class="form-group">
                     <label for="password" class="col-form-label">Password</label>
-                    <input name="password" type="password" class="form-control" id="password">
+                    <input name="password" type="password" class="form-control" id="password" required>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary btn-block">Sign up</button>
