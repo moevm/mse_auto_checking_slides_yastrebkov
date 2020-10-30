@@ -17,6 +17,12 @@ More information can be found [here](http://se.moevm.info/doku.php/courses:mse:p
 
 Team uses GitHub Projects for activity tracking. The activity board can be found [here](https://github.com/moevm/mse_auto_checking_slides_yastrebkov/projects/1).
 
+#### Iterations:
+
+- Iteration 1: base app with simple UI ([issues](https://github.com/moevm/mse_auto_checking_slides_yastrebkov/milestone/1))
+- Iteration 2: improved UI, user registration, DB connection, investigating libraries to wirk with presentations ([issues](https://github.com/moevm/mse_auto_checking_slides_yastrebkov/milestone/2))
+- Iteration 3: implementation of simple presentation checks, implement customization of checks ([issues](https://github.com/moevm/mse_auto_checking_slides_yastrebkov/milestone/3))
+
 ## Launch
 
 To launch project you need Python 3 installed on your computer. To install Python, follow [official site's](https://wiki.python.org/moin/BeginnersGuide/Download) instructions. This project assumed to work on Ubuntu 18.04 or later. Stable launching on other operation systems is not guaranteed.
