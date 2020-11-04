@@ -56,7 +56,9 @@ pip install -r requirements.txt
 3. Run application:
 
 ```shell script
-python app.py
+python app.py --host 127.0.0.1 --port 5000
 ```
+
+Values for `host` and `port` arguments can be different, but it is strongly recommended to use default values: `127.0.0.1` and `5000` respectively. If you don't pass arguments, default values `0.0.0.0` and `80` will be used. This configuration is suitable for service environment and probably won't run on your local machine.
 
 4. Navigate to localhost:5000 or 127.0.0.1:5000 in your browser and enjoy.
