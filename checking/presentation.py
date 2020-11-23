@@ -11,7 +11,3 @@ class Presentation:
             titles.append(slide.shapes.title.text)
         return titles
 
-
-# TODO delete (just for test for now)
-p = Presentation("test_presentations/good.pptx")
-print(p.slides_titles)
