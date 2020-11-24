@@ -8,6 +8,9 @@ class Presentation:
     def slides_titles(self):
         titles = []
         for slide in self._presentation.slides:
-            titles.append(slide.shapes.title.text)
+            try:
+                titles.append(slide.shapes.title.text)
+            except:
+                titles.append('')
         return titles
 

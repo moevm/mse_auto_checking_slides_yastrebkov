@@ -1,4 +1,5 @@
 from .presentation import Presentation
+import inspect
 
 class Checker:
     checks = []
@@ -14,13 +15,15 @@ class Checker:
         return check
 
     @classmethod
-    def check(cls, presentation_file):
+    def check(cls, presentation_file, student_degree):
         presentation = Presentation(presentation_file)
         results = []
         for check in Checker.checks:
-            print(check)
+            check_parameters = {'presentation': presentation}
+            if 'student_degree' in inspect.signature(check.check).parameters:
+                check_parameters['student_degree'] = student_degree
             results.append({
                 'id': check.id,
-                'success': check.check(presentation),
+                'success': check.check(**check_parameters),
             })
         return results
