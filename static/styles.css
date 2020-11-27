@@ -40,6 +40,9 @@ body > * {
     #header {
         overflow-y: initial;
     }
+    #content {
+        overflow-y: auto;
+    }
 }
 /*body > ::before {*/
 /*    content: ' ';*/
