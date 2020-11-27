@@ -1,5 +1,4 @@
 :root {
-    --background-color: #333;
     --foreground-color: #fff;
     --subtle-color: #666;
 
@@ -10,14 +9,11 @@
 
     --scroll-thumb-color: #444;
 
-    --loading-indicator-background: #444;
-    --loading-indicator-color: #fff;
-
     --max-width: 700px;
+    --body-padding: 9px;
 }
 html, body {
     height: 100%;
-    background-color: var(--background-color);
     color: var(--foreground-color);
     font-family: sans-serif;
 }
@@ -36,7 +32,7 @@ body > * {
     overflow-y: scroll;
     display: flex;
 }
-@media (max-width: 700px) {
+@media (max-width: 718px) { /* 718px = var(--max-width) + 2 * var(--body-padding)*/
     #header {
         overflow-y: initial;
     }
@@ -60,8 +56,8 @@ body > * {
     width: 100%;
     max-width: var(--max-width);
 
-    padding-left: 9px;
-    padding-right: 9px;
+    padding-left: var(--body-padding);
+    padding-right: var(--body-padding);
 }
 #content {
     flex-grow: 1;
