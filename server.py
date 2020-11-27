@@ -3,6 +3,7 @@ from checking import Checker
 import db
 import authorization
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
@@ -75,7 +76,7 @@ def get_reports():
 def get_index_html(path):
     return send_from_directory('static', 'index.html')
 
-
-import os
+if os.environ.get("NO_CACHE", None):
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))

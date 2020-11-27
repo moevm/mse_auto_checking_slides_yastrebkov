@@ -36,7 +36,7 @@ export class SignInUpFormBase extends Component {
     }
 
     render() {
-        this._app = useContext(AppContext).app;
+        this._app = useContext(AppContext);
 
         const controls = html`${
             this._controls.map(control => html`

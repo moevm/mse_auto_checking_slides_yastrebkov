@@ -26,11 +26,11 @@ export class ReportView extends Component {
     }
 
     render() {
-        this._app = useContext(AppContext).app;
+        this._app = useContext(AppContext);
 
         if (!this.state.responseWithReport) {
             this._fetchReport();
-            return html``;
+            return html`<div class="loading report" ></div>`;
         }
 
         if (!this.state.responseWithReport.success)

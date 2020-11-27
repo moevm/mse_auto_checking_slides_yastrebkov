@@ -2,7 +2,7 @@ import {AppContext} from "./app.mjs";
 import {html, useContext} from '../preact.mjs';
 
 export function UserControls(props) {
-    const app = useContext(AppContext).app;
+    const app = useContext(AppContext);
 
     let controls = !props.userName ?
         html`

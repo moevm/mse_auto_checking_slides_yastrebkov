@@ -1,71 +1,40 @@
-import {Component, html, useContext, createRef} from "../preact.mjs";
-import {post} from "../ajax.mjs";
+import {Component, html, createRef} from "../preact.mjs";
 import {CheckingSettings} from "./checking-settings.mjs";
 import {ReportsList} from "./reports-list.mjs";
-import {AppContext} from "./app.mjs";
+import {PresentationUploadingArea} from "./presentation-uploading-area.mjs";
+import {stateSaving, createStateSaver} from "../state-saving.mjs";
 
-function toBase64(file){
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            let result = reader.result;
-            resolve(result.substring(result.indexOf(",") + 1));
-        }
-        reader.onerror = error => reject(error);
-    });
-}
-
-export class MainPageContent extends Component {
+export class MainPageContent extends stateSaving(Component) {
     constructor(props) {
         super(props);
 
-        this._checkingSettingsRef = createRef();
+        this.state = {};
+
+        if (!this.restoreState())
+            this.state._checkingSettingsStateSaver = createStateSaver();
+
+        this._mainPageContentRootRef = createRef();
     }
 
-    _uploadPresentationForChecking(file) {
-        if (!file)
-            return;
-
-        toBase64(file).then(presentation => {
-            post("/api/check-presentation", {
-                presentation,
-                fileName: file.name,
-                ...this._checkingSettingsRef.current.settings
-            })
-            .then(response => {
-                if (!response || !response.success)
-                    return;
-                this._app.relocate('/report/' + response.reportId);
-                this._app.fetchReports(); // TODO?
-            })
-        })
-        .catch(console.error);
+    componentDidMount() {
+        if (this.state.scrollTop) {
+            this._mainPageContentRootRef.current.parentElement.scrollTop = this.state.scrollTop;
+            delete this.state.scrollTop;
+        }
     }
-
-    _openPresentationChoosingDialog() {
-        let fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = ".pptx";
-        fileInput.click();
-
-        fileInput.onchange = () => {
-            let file = fileInput.files[0];
-            this._uploadPresentationForChecking(file);
-        };
+    componentWillUnmount() {
+        this.state.scrollTop = this._mainPageContentRootRef.current.parentElement.scrollTop;
+        super.componentWillUnmount();
     }
 
     render() {
-        this._app = useContext(AppContext).app;
-
         return html`
-            <div id="new-presentation-downloading-area"
-                onclick=${() => this._openPresentationChoosingDialog()}
-                ondrop=${event => {event.preventDefault(); this._uploadPresentationForChecking(event.dataTransfer.files[0])}}
-                ondragover=${event => {event.preventDefault(); event.dataTransfer.dropEffect = "move";}}
-            >Перетащи презентацию или кликни меня чтобы выбрать её</div>
-            <${CheckingSettings} ref=${this._checkingSettingsRef} />
-            <${ReportsList} />
+            <div ref=${this._mainPageContentRootRef} class="main-block">
+                <${PresentationUploadingArea} getSettings=${() => this._getSettings()}/>
+                <${CheckingSettings} getSettingsCallback=${getSettings => this._getSettings = getSettings}
+                    stateSaver=${this.state._checkingSettingsStateSaver}/>
+                <${ReportsList} />
+            </div>
         `;
     }
 }

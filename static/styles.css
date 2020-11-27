@@ -3,12 +3,17 @@
     --foreground-color: #fff;
     --subtle-color: #666;
 
-    --header-height: 50px;
+    --header-height: 55px;
     --border-radius: 5px;
 
     --box-shadow: inset 0 0 1px 1px #ffffff09, 1px 1px 3px 0 #0004;
 
     --scroll-thumb-color: #444;
+
+    --loading-indicator-background: #444;
+    --loading-indicator-color: #fff;
+
+    --max-width: 700px;
 }
 html, body {
     height: 100%;
@@ -17,18 +22,46 @@ html, body {
     font-family: sans-serif;
 }
 body {
-    max-width: 700px;
     margin: 0 auto;
     box-sizing: border-box;
-    /*padding: 5px 5px;*/
     display: flex;
     flex-direction: column;
 }
-#header {
+.header-bar {
     height: var(--header-height);
     display: flex;
     align-items: center;
+}
+body > * {
+    overflow-y: scroll;
+    display: flex;
+}
+@media (max-width: 700px) {
+    #header {
+        overflow-y: initial;
+    }
+}
+/*body > ::before {*/
+/*    content: ' ';*/
+/*    background-color: red;*/
+/*    display: block;*/
+/*    width: calc(100vw - 100%);*/
+/*}*/
+#header {
     flex-shrink: 0;
+}
+#content > *, #header > * {
+    margin: 0 auto;
+
+    box-sizing: border-box;
+    width: 100%;
+    max-width: var(--max-width);
+
+    padding-left: 9px;
+    padding-right: 9px;
+}
+#content {
+    flex-grow: 1;
 }
 #user-controls {
     margin-left: auto;
@@ -36,20 +69,36 @@ body {
     align-items: center;
     gap: 6px;
 }
-#new-presentation-downloading-area {
+#new-presentation-uploading-area {
     border: 2px dashed var(--subtle-color);
     border-radius: var(--border-radius);
     cursor: pointer;
     text-align: center;
-    padding: 70px 0;
+    padding: 70px 10px;
     margin: 30px 0;
+    position: relative;
+    z-index: 0;
 }
-#content {
-    overflow: auto;
-    flex-grow: 1;
+.progress-indicator, .fail-indicator {
+    position: absolute;
+    width: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #0F02;
+    z-index: -1;
 }
-#header, #content, .user-name {
+.fail-indicator {
+    width: 100%;
+    background-color: #F002;
+}
+.user-name {
     padding: 5px;
+}
+.vertically-scrollable {
+    height: 100%;
+    display: flex;
+    flex-direction: column;;
 }
 button {
     border: 2px solid var(--subtle-color);
@@ -59,25 +108,40 @@ button {
     font: inherit;
     border-radius: var(--border-radius);
     cursor: pointer;
-    /*margin: 5px;*/
 }
 .error-message {
     color: red;
     padding: 5px;
 }
-.sign-in-out-form, .report, .checks {
+.sign-in-out-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: var(--header-height);
+    gap: 14px;
+    height: 100%;
+}
+.report {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 40px 0 0;
     gap: 14px;
+    height: 100%;
+}
+.report:empty {
+    width: 200px;
+    height: 300px;
+}
+.check {
+    padding: 10px 0;
 }
 .sign-in-out-form > button {
     margin-top: 8px;
 }
 .checks {
     padding-top: 20px;
-    gap: 18px;
 }
 input {
     font: inherit;
@@ -92,7 +156,7 @@ input {
 }
 #logo {
     cursor: pointer;
-    padding: 5px;
+    padding: 5px 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -155,7 +219,7 @@ samp, .fragment {
     /*font-family: monospace;*/
     background-color: #fff1;
     border-radius: var(--border-radius);
-    padding: 4px 8px;
+    padding: 3px 8px;
     box-shadow: var(--box-shadow);
 }
 input, button {
@@ -168,20 +232,21 @@ a {
 }
 h2 {
     font: inherit;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     text-align: center;
-    margin: 40px 0 20px;
+    margin: 50px 0 20px;
     padding: 0;
 }
 .report-link {
     display: flex;
-    padding: 11px;
+    padding: 11px 0;
     align-items: center;
     cursor: pointer;
     border-bottom: 1px solid #fff1;
 }
 .report-link:last-child {
     border: none;
+    margin-bottom: 15px;
 }
 .report-link > :last-child {
     margin-left: auto;
@@ -201,7 +266,7 @@ html {
     border: 1px solid var(--subtle-color);
     border-radius: var(--border-radius);
     overflow: hidden;
-    /*transition: max-height 500ms ease-in-out;*/
+    flex-shrink: 0;
 }
 .toggle:not(.open) {
     max-height: var(--closed-height);
@@ -241,5 +306,11 @@ html {
 .switch > .switched {
     background-color: var(--subtle-color);
 }
-
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+.subtle-text {
+    color: var(--subtle-color);
+    text-align: center;
+}
  /*todo replace id with class*/

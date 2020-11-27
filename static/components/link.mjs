@@ -2,7 +2,7 @@ import {html, useContext} from "../preact.mjs";
 import {AppContext} from "./app.mjs";
 
 export function Link(props) {
-    let app = useContext(AppContext).app;
+    let app = useContext(AppContext);
 
     const onClick = event => {
         event.preventDefault();

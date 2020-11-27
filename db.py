@@ -42,7 +42,10 @@ def generate_new_token_for_user(login):
 
 
 def find_login_for_token(token):
-    return _db.authTokens.find_one({'token': token})['login']
+    token_record = _db.authTokens.find_one({'token': token})
+    if token_record:
+        return token_record['login']
+    return None
 
 
 # Reports:

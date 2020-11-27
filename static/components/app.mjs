@@ -6,6 +6,7 @@ import {SignInForm} from "./sign-in-form.mjs";
 import {SignUpForm} from "./sign-up-form.mjs";
 import {ReportView} from "./report-view.mjs";
 import {get} from "../ajax.mjs";
+import {createStateSaver} from "../state-saving.mjs";
 
 export const AppContext = createContext(null);
 
@@ -27,6 +28,8 @@ export class App extends Component {
             login: localStorage.login,
             authToken: localStorage.authToken,
         }
+
+        this._mainPageContentStateSaver = createStateSaver();
 
         window.addEventListener("popstate", () => this.setState({location: window.location.pathname}));
     }
@@ -63,25 +66,28 @@ export class App extends Component {
 
     render() {
         let contentElement = null;
-        let contentOnLocations = {
-            '/sign-in': SignInForm,
-            '/sign-up': SignUpForm,
-            '/report/(?<reportId>[0-9a-zA-Z]+)': ReportView,
-            '/': MainPageContent,
-        }
-        for (let location in contentOnLocations) {
+        this._contentOnLocations = {
+            '/sign-in': {component: SignInForm},
+            '/sign-up': {component: SignUpForm},
+            '/report/(?<reportId>[0-9a-zA-Z]+)': {component: ReportView},
+            '/': {component: MainPageContent, stateSaver: this._mainPageContentStateSaver},
+        };
+        for (let location in this._contentOnLocations) {
             let locationMatch = this.state.location.match(location);
             if (locationMatch) {
-                contentElement = html`<${contentOnLocations[location]} ...${locationMatch.groups} />`;
+                let {component, stateSaver} = this._contentOnLocations[location];
+                contentElement = html`<${component} ...${locationMatch.groups} ...${{stateSaver}}/>`;
                 break;
             }
         }
 
         return html`
-            <${AppContext.Provider} value=${{app: this}}><!--TODO try to just pass 'this'-->
+            <${AppContext.Provider} value=${this}>
                 <div id="header">
-                    <${Link} id="logo" href="/">ETU presentation checker<//>
-                    <${UserControls} userName=${this.state.login} />
+                    <div class="header-bar">
+                        <${Link} id="logo" href="/">ETU presentation checker<//>
+                        <${UserControls} userName=${this.state.login} />
+                    </div>
                 </div>
                 <div id="content">${contentElement}</div>
             <//>
