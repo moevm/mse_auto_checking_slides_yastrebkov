@@ -1,0 +1,315 @@
+:root {
+    --foreground-color: #fff;
+    --subtle-color: #666;
+
+    --header-height: 55px;
+    --border-radius: 5px;
+
+    --box-shadow: inset 0 0 1px 1px #ffffff09, 1px 1px 3px 0 #0004;
+
+    --scroll-thumb-color: #444;
+
+    --max-width: 700px;
+    --body-padding: 9px;
+}
+html, body {
+    height: 100%;
+    color: var(--foreground-color);
+    font-family: sans-serif;
+}
+body {
+    margin: 0 auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+.header-bar {
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+}
+body > * {
+    overflow-y: scroll;
+    display: flex;
+}
+@media (max-width: 718px) { /* 718px = var(--max-width) + 2 * var(--body-padding)*/
+    #header {
+        overflow-y: initial;
+    }
+    #content {
+        overflow-y: auto;
+    }
+}
+/*body > ::before {*/
+/*    content: ' ';*/
+/*    background-color: red;*/
+/*    display: block;*/
+/*    width: calc(100vw - 100%);*/
+/*}*/
+#header {
+    flex-shrink: 0;
+}
+#content > *, #header > * {
+    margin: 0 auto;
+
+    box-sizing: border-box;
+    width: 100%;
+    max-width: var(--max-width);
+
+    padding-left: var(--body-padding);
+    padding-right: var(--body-padding);
+}
+#content {
+    flex-grow: 1;
+}
+#user-controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+#new-presentation-uploading-area {
+    border: 2px dashed var(--subtle-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-align: center;
+    padding: 70px 10px;
+    margin: 30px 0;
+    position: relative;
+    z-index: 0;
+}
+.progress-indicator, .fail-indicator {
+    position: absolute;
+    width: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #0F02;
+    z-index: -1;
+}
+.fail-indicator {
+    width: 100%;
+    background-color: #F002;
+}
+.user-name {
+    padding: 5px;
+}
+.vertically-scrollable {
+    height: 100%;
+    display: flex;
+    flex-direction: column;;
+}
+button {
+    border: 2px solid var(--subtle-color);
+    background-color: transparent;
+    padding: 5px 10px;
+    color: inherit;
+    font: inherit;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+.error-message {
+    color: red;
+    padding: 5px;
+}
+.sign-in-out-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: var(--header-height);
+    gap: 14px;
+    height: 100%;
+}
+.report {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 0 0;
+    gap: 14px;
+    height: 100%;
+}
+.report:empty {
+    width: 200px;
+    height: 300px;
+}
+.check {
+    padding: 10px 0;
+}
+.sign-in-out-form > button {
+    margin-top: 8px;
+}
+.checks {
+    padding-top: 20px;
+}
+input {
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    border: none;
+    filter: none;
+    padding: 5px 10px;
+}
+.sign-in-out-input {
+    text-align: center;
+}
+#logo {
+    cursor: pointer;
+    padding: 5px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.banner {
+    text-align: center;
+    padding: 50px 0;
+}
+.check {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.success-sign, .fail-sign {
+    width: 1rem;
+    height: 1rem;
+    background-color: grey;
+    border-radius: 100rem;
+    position: relative;
+    --sign-line-width: 3px;
+    box-shadow: var(--box-shadow);
+}
+.success-sign::after, .fail-sign::after, .fail-sign::before {
+    position: absolute;
+    content: "";
+
+    border: solid var(--background-color);
+    border-width: 0;
+    border-bottom-width: var(--sign-line-width);
+}
+.success-sign::after {
+    border-right-width: var(--sign-line-width);
+}
+.success-sign {
+    background-color: #0F0;
+}
+.fail-sign {
+    background-color: #F00;
+}
+.success-sign::after {
+    width: 23%;
+    height: 48%;
+    left: 51%;
+    top: 42%;
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+.fail-sign::after, .fail-sign::before {
+    width: 70%;
+    left: 15%;
+    height: 0;
+    top: calc(50% - var(--sign-line-width) / 2);
+    transform-origin: center calc(var(--sign-line-width) / 2);
+    transform: rotate(45deg);
+}
+.fail-sign::before {
+    transform: rotate(-45deg);
+}
+samp, .fragment {
+    font: inherit;
+    /*font-family: monospace;*/
+    background-color: #fff1;
+    border-radius: var(--border-radius);
+    padding: 3px 8px;
+    box-shadow: var(--box-shadow);
+}
+input, button {
+    outline: none;
+}
+a {
+    color: inherit;
+    text-decoration: inherit;
+    outline: none;
+}
+h2 {
+    font: inherit;
+    font-size: 1.15rem;
+    text-align: center;
+    margin: 50px 0 20px;
+    padding: 0;
+}
+.report-link {
+    display: flex;
+    padding: 11px 0;
+    align-items: center;
+    cursor: pointer;
+    border-bottom: 1px solid #fff1;
+}
+.report-link:last-child {
+    border: none;
+    margin-bottom: 15px;
+}
+.report-link > :last-child {
+    margin-left: auto;
+}
+::-webkit-scrollbar, ::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-thumb-color);
+}
+html {
+    scrollbar-color: var(--scroll-thumb-color) transparent;
+}
+.toggle {
+    --closed-height: 50px;
+    --toggle-padding: 10px;
+    border: 1px solid var(--subtle-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.toggle:not(.open) {
+    max-height: var(--closed-height);
+}
+.toggle > .toggle-content {
+    padding: 0 var(--toggle-padding) var(--toggle-padding);
+}
+.toggle-header {
+    height: var(--closed-height);
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    cursor: pointer;
+    padding: 0 var(--toggle-padding);
+}
+.toggle-indicator {
+    display: inline-block;
+}
+.toggle:not(.open) .toggle-indicator {
+    transform: rotate(-90deg);
+}
+.toggle.open .toggle-short-content {
+    display: none;
+}
+.toggle-short-content {
+    margin-left: auto;
+    color: var(--subtle-color);
+}
+.switch {
+    display: inline-flex;
+    cursor: pointer;
+}
+.switch > * {
+    padding: 5px 10px;
+    border-radius: 100rem;
+}
+.switch > .switched {
+    background-color: var(--subtle-color);
+}
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+.subtle-text {
+    color: var(--subtle-color);
+    text-align: center;
+}
+ /*todo replace id with class*/
