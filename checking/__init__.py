@@ -11,3 +11,6 @@ Checker.add(ConclusionPresence, 2)
 
 from .checks.slides_amount import SlidesAmount
 Checker.add(SlidesAmount, 3)
+
+from .checks.slide_numbers import SlideNumbers
+Checker.add(SlideNumbers, 4)

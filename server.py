@@ -4,8 +4,11 @@ import db
 import authorization
 from datetime import datetime
 import os
+from flask_compress import Compress
 
+compress = Compress()
 app = Flask(__name__)
+compress.init_app(app)
 
 
 app.route('/api/sign-in', methods=["POST"])(authorization.sign_in)
