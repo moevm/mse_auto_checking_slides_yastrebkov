@@ -22,8 +22,14 @@ class Checker:
             check_parameters = {'presentation': presentation}
             if 'student_degree' in inspect.signature(check.check).parameters:
                 check_parameters['student_degree'] = student_degree
-            results.append({
+            failure_reasons = []
+            if 'failure_reasons' in inspect.signature(check.check).parameters:
+                check_parameters['failure_reasons'] = failure_reasons
+            result = {
                 'id': check.id,
                 'success': check.check(**check_parameters),
-            })
+            }
+            if len(failure_reasons) > 0:
+                result['failureReasons'] = failure_reasons
+            results.append(result)
         return results
