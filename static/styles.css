@@ -110,6 +110,8 @@ button {
 }
 .error-message {
     color: red;
+}
+.sign-in-out-form > .error-message {
     padding: 5px;
 }
 .sign-in-out-form {
@@ -165,9 +167,14 @@ input {
     padding: 50px 0;
 }
 .check {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1rem 1fr;
     align-items: center;
-    gap: 7px;
+    column-gap: 12px;
+    row-gap: 8px;
+}
+.check > :not(.success-sign):not(.fail-sign) {
+    grid-column: 2;
 }
 .success-sign, .fail-sign {
     width: 1rem;

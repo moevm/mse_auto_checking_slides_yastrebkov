@@ -3,5 +3,6 @@ import { useContext } from 'https://unpkg.com/preact@latest/hooks/dist/hooks.mod
 import htm from 'https://unpkg.com/htm?module';
 
 const html = htm.bind(h); // Initialize htm with Preact
+html.h = h
 
 export {Component, render, createContext, createRef, html, useContext};

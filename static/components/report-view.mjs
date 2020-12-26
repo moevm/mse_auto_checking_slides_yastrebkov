@@ -48,6 +48,8 @@ export class ReportView extends Component {
                 <div class="check">
                     <div class=${check.success ? "success-sign" : "fail-sign"} />
                     <div>${checkName}</div>
+                    ${check.failureReasons ?
+                            check.failureReasons.map(reason => html`<div class="error-message">${reason}</div>`) : null}
                 </div>
             `;
         };
